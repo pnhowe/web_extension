@@ -5,9 +5,9 @@ var base_path;
 var cur_path;
 var cur_action;
 var field_map;
-var paramater_map;
+var parameter_map;
 var current_filter;
-var filter_paramater_map;
+var filter_parameter_map;
 
 $( document ).ready( function()
 {
@@ -121,9 +121,9 @@ function setElement( path )
   field_map = {};
   action_list = [];
   cur_action = null;
-  paramater_map = {};
+  parameter_map = {};
   current_filter = '* ALL *';
-  filter_paramater_map = {};
+  filter_parameter_map = {};
 
   $( '#path' ).html( path );
 
@@ -139,10 +139,10 @@ function setElement( path )
   $( '#delete-id-text' ).val( '' );
   $( '#action-dropdown' ).empty();
   $( '#filter-dropdown' ).empty();
-  $( '#call-paramater-table tbody' ).empty();
-  $( '#list-paramater-table tbody' ).empty();
+  $( '#call-parameter-table tbody' ).empty();
+  $( '#list-parameter-table tbody' ).empty();
   $( '#list-alert' ).empty();
-  $( '#list-paramater-row' ).hide();
+  $( '#list-parameter-row' ).hide();
   $( '#get-alert' ).empty();
   $( '#create-alert' ).empty();
   $( '#update-alert' ).empty();
@@ -157,44 +157,44 @@ function setElement( path )
     .fail( _describe_fail );
 }
 
-function _edit_func( paramater, target )
+function _edit_func( parameter, target )
 {
-  if( paramater.is_array )
+  if( parameter.is_array )
   {
-    listEdit( target, paramater.default );
+    listEdit( target, parameter.default );
   }
-  else if( paramater.type == 'String' )
+  else if( parameter.type == 'String' )
   {
-    if( paramater.length === null )
+    if( parameter.length === null )
     {
-      textAreaEdit( target, paramater.default );
+      textAreaEdit( target, parameter.default );
     }
     else
     {
-      textEdit( target, paramater.default, paramater.length );
+      textEdit( target, parameter.default, parameter.length );
     }
   }
-  else if( paramater.type ==  'Boolean' )
+  else if( parameter.type ==  'Boolean' )
   {
-    booleanEdit( target, paramater.default );
+    booleanEdit( target, parameter.default );
   }
-  else if( paramater.type == 'Map' )
+  else if( parameter.type == 'Map' )
   {
-    mapEdit( target, paramater.default );
+    mapEdit( target, parameter.default );
   }
   else
   {
-    textEdit( target, paramater.default, 25 );
+    textEdit( target, parameter.default, 25 );
   }
 }
 
-function _view_func( paramater, target )
+function _view_func( parameter, target )
 {
-  if( paramater.type ==  'Boolean' )
+  if( parameter.type ==  'Boolean' )
   {
     booleanView( target );
   }
-  else if( paramater.type == 'Map' )
+  else if( parameter.type == 'Map' )
   {
     mapView( target );
   }
@@ -260,12 +260,12 @@ function _describe_done( data )
       entry.on( 'click', load_filter );
       $( '#filter-dropdown' ).append( entry );
 
-      filter_paramater_map[ filter_name ] = {};
-      for( var paramater of data.list_filter_list[ filter_name ] )
+      filter_parameter_map[ filter_name ] = {};
+      for( var parameter of data.list_filter_list[ filter_name ] )
       {
-        var doc = paramater.doc;
+        var doc = parameter.doc;
 
-        filter_paramater_map[ filter_name ][ paramater.name ] = paramater;
+        filter_parameter_map[ filter_name ][ parameter.name ] = parameter;
       }
     }
 
@@ -371,16 +371,16 @@ function list( event )
   {
     filter_name = '_query_';
     filter_values = {};
-    filter_values[ 'filter' ] = $( '#filter-paramater-filter' ).data( 'get' )( $( '#filter-paramater-filter' ) );
+    filter_values[ 'filter' ] = $( '#filter-parameter-filter' ).data( 'get' )( $( '#filter-parameter-filter' ) );
   }
   else
   {
     filter_values = {};
-    for( var paramater in filter_paramater_map[ current_filter ] )
+    for( var parameter in filter_parameter_map[ current_filter ] )
     {
-      filter_values[ paramater ] = $( '#filter-paramater-' + paramater ).data( 'get' )( $( '#filter-paramater-' + paramater ) );
-      $( '#filter-paramater-' + paramater +'-label' ).removeClass( 'alert-danger' );
-      $( '#filter-paramater-' + paramater ).trigger( 'error_clear' );
+      filter_values[ parameter ] = $( '#filter-parameter-' + parameter ).data( 'get' )( $( '#filter-parameter-' + parameter ) );
+      $( '#filter-parameter-' + parameter +'-label' ).removeClass( 'alert-danger' );
+      $( '#filter-parameter-' + parameter ).trigger( 'error_clear' );
     }
   }
 
@@ -411,10 +411,10 @@ function _list_fail( message, detail )
     if( typeof( detail ) == 'object' )
     {
       $( '#list-alert' ).append( 'Fix Errors Below' );
-      for( var paramater in detail )
+      for( var parameter in detail )
       {
-        $( '#filter-paramater-' + paramater +'-label' ).addClass( 'alert-danger' );
-        $( '#filter-paramater-' + paramater ).trigger( 'error', [ detail[ paramater ] ] );
+        $( '#filter-parameter-' + parameter +'-label' ).addClass( 'alert-danger' );
+        $( '#filter-parameter-' + parameter ).trigger( 'error', [ detail[ parameter ] ] );
       }
     }
     else
@@ -647,41 +647,41 @@ function load_filter( event )
 {
   $( '#list-alert' ).empty();
 
-  var paramater_table = $( '#list-paramater-table tbody' );
-  paramater_table.empty();
+  var parameter_table = $( '#list-parameter-table tbody' );
+  parameter_table.empty();
 
   current_filter = this.childNodes[0].textContent;
 
   if( current_filter == '* ALL *' )
   {
-    $( '#list-paramater-row' ).hide();
+    $( '#list-parameter-row' ).hide();
     return;
   }
 
-  $( '#list-paramater-row' ).show();
+  $( '#list-parameter-row' ).show();
 
   if( current_filter == '* QUERY *' )
   {
-    var row = $( '<tr><th id="filter-paramater-filter-label">Filter</th><td><span id="filter-paramater-filter"/></td></tr>' );
-    _edit_func( { 'type': 'Map' }, row.find( '#filter-paramater-filter' ) )
-    paramater_table.append( row );
-    $( '#filter-paramater-filter' ).trigger( 'clear' );
+    var row = $( '<tr><th id="filter-parameter-filter-label">Filter</th><td><span id="filter-parameter-filter"/></td></tr>' );
+    _edit_func( { 'type': 'Map' }, row.find( '#filter-parameter-filter' ) )
+    parameter_table.append( row );
+    $( '#filter-parameter-filter' ).trigger( 'clear' );
     return;
   }
 
-  for( var name in filter_paramater_map[ current_filter ] )
+  for( var name in filter_parameter_map[ current_filter ] )
   {
-    var paramater = filter_paramater_map[ current_filter ][ name ];
-    var doc = paramater.doc;
+    var parameter = filter_parameter_map[ current_filter ][ name ];
+    var doc = parameter.doc;
     if( doc === undefined )
     {
       doc = '';
     }
 
-    var row = $( '<tr><th id="filter-paramater-' + paramater.name + '-label">' + paramater.name + '</th><td><span id="filter-paramater-' + paramater.name + '"/></td><td>' + doc + '</td></tr>' );
-    _edit_func( paramater, row.find( '#filter-paramater-' + paramater.name ) )
-    paramater_table.append( row );
-    $( '#filter-paramater-' + paramater.name ).trigger( 'clear' );
+    var row = $( '<tr><th id="filter-parameter-' + parameter.name + '-label">' + parameter.name + '</th><td><span id="filter-parameter-' + parameter.name + '"/></td><td>' + doc + '</td></tr>' );
+    _edit_func( parameter, row.find( '#filter-parameter-' + parameter.name ) )
+    parameter_table.append( row );
+    $( '#filter-parameter-' + parameter.name ).trigger( 'clear' );
   }
 }
 
@@ -692,8 +692,8 @@ function load_action( event )
   $( '#call-id-group' ).hide();
   $( '#call-id-text' ).val( '' );
 
-  paramater_map = {};
-  $( '#call-paramater-table tbody' ).empty();
+  parameter_map = {};
+  $( '#call-parameter-table tbody' ).empty();
 
   cur_action = this.childNodes[0].textContent;
 
@@ -704,21 +704,21 @@ function load_action( event )
 
 function _call_describe_done( data )
 {
-  var paramater_table = $( '#call-paramater-table tbody' );
+  var parameter_table = $( '#call-parameter-table tbody' );
 
-  for( var paramater of data.paramaters )
+  for( var parameter of data.parameters )
   {
-    var doc = paramater.doc;
+    var doc = parameter.doc;
     if( doc === undefined )
     {
       doc = '';
     }
 
-    var row = $( '<tr><th id="paramater-' + paramater.name + '-label">' + paramater.name + '</th><td><span id="paramater-' + paramater.name + '"/></td><td>' + doc + '</td></tr>' );
-    _edit_func( paramater, row.find( '#paramater-' + paramater.name ) )
-    paramater_table.append( row );
-    paramater_map[ paramater.name ] = paramater;
-    $( '#paramater-' + paramater.name ).trigger( 'clear' );
+    var row = $( '<tr><th id="parameter-' + parameter.name + '-label">' + parameter.name + '</th><td><span id="parameter-' + parameter.name + '"/></td><td>' + doc + '</td></tr>' );
+    _edit_func( parameter, row.find( '#parameter-' + parameter.name ) )
+    parameter_table.append( row );
+    parameter_map[ parameter.name ] = parameter;
+    $( '#parameter-' + parameter.name ).trigger( 'clear' );
   }
 
   if( !data.static )
@@ -749,11 +749,11 @@ function call( event )
   }
 
   var values = {};
-  for( var paramater in paramater_map )
+  for( var parameter in parameter_map )
   {
-    values[ paramater ] = $( '#paramater-' + paramater ).data( 'get' )( $( '#paramater-' + paramater ) );
-    $( '#paramater-' + paramater +'-label' ).removeClass( 'alert-danger' );
-    $( '#paramater-' + paramater ).trigger( 'error_clear' );
+    values[ parameter ] = $( '#parameter-' + parameter ).data( 'get' )( $( '#parameter-' + parameter ) );
+    $( '#parameter-' + parameter +'-label' ).removeClass( 'alert-danger' );
+    $( '#parameter-' + parameter ).trigger( 'error_clear' );
   }
 
   cinp.call( uri, values, false )
@@ -769,9 +769,9 @@ function _call_done( result )
   }
 
   $( '#call-alert' ).html( 'result: "' + result + '"' );
-  for( var paramater in paramater_map )
+  for( var parameter in parameter_map )
   {
-    $( '#paramater-' + paramater ).trigger( 'clear' );
+    $( '#parameter-' + parameter ).trigger( 'clear' );
   }
 }
 
@@ -786,10 +786,10 @@ function _call_fail( message, detail )
     if( typeof( detail ) == 'object' )
     {
       $( '#call-alert' ).append( 'Fix Errors Below' );
-      for( var paramater in detail )
+      for( var parameter in detail )
       {
-        $( '#paramater-' + paramater +'-label' ).addClass( 'alert-danger' );
-        $( '#paramater-' + paramater ).trigger( 'error', [ detail[ paramater ] ] );
+        $( '#parameter-' + parameter +'-label' ).addClass( 'alert-danger' );
+        $( '#parameter-' + parameter ).trigger( 'error', [ detail[ parameter ] ] );
       }
     }
     else

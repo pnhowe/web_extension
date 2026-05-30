@@ -1,7 +1,7 @@
 /*
  * CInP jquery client
  * version 0.9
- * for CInP API version 1.0
+ * for CInP API version 2.0
  *
  * Copyright Peter Howe, Floyd Arguello
  * Released under the Apache 2.0 license
@@ -59,7 +59,7 @@ var cinpBuilder = {};
           url: this.host + uri,
           dataType: 'json',
           accepts: { json: 'application/json', text: 'application/json' },
-          headers: $.extend( {}, header_map, { 'CInP-Version': '1.0' } ),
+          headers: $.extend( {}, header_map, { 'CInP-Version': '2.0' } ),
           data: JSON.stringify( data ),
           contentType: 'application/json',
           processData: false,
@@ -187,7 +187,7 @@ var cinpBuilder = {};
               }
               else if( type == 'Action' )
               {
-                deferred.resolve( { type: 'model', name: data.name, doc: data.doc, path: data.path, return_type: data[ 'return-type' ], static: data.static, paramaters: data.paramaters }, uri );
+                deferred.resolve( { type: 'model', name: data.name, doc: data.doc, path: data.path, return_type: data[ 'return-type' ], static: data.static, parameters: data.parameters }, uri );
               }
               else
               {
@@ -319,7 +319,7 @@ var cinpBuilder = {};
         return deferred.promise();
       };
 
-      cinp.call = function( uri, paramater_map, force_multi_mode )
+      cinp.call = function( uri, parameter_map, force_multi_mode )
       {
         var deferred = $.Deferred();
 
@@ -328,7 +328,7 @@ var cinpBuilder = {};
           force_multi_mode = false;
         }
 
-        var request = this._request( 'CALL', uri, paramater_map, { 'Multi-Object': force_multi_mode } );
+        var request = this._request( 'CALL', uri, parameter_map, { 'Multi-Object': force_multi_mode } );
 
         request
           .done(
